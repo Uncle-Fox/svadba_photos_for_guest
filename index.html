@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Свадьба 30.05.2026</title>
+  <style>
+    :root {
+      --gap: 4px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: #111;
+      color: #fff;
+    }
+
+    /* ===== Шапка с общим фото ===== */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 60vh;
+      min-height: 320px;
+      overflow: hidden;
+    }
+
+    .hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.7);
+    }
+
+    .hero-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      text-align: center;
+      padding: 0 20px;
+      flex-wrap: wrap;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(28px, 5vw, 56px);
+      font-weight: 400;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    .repo-link {
+      color: #fff;
+      font-size: clamp(14px, 2vw, 18px);
+      letter-spacing: 1px;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      padding: 8px 18px;
+      border-radius: 30px;
+      background: rgba(0, 0, 0, 0.25);
+      transition: background 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .repo-link:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #fff;
+    }
+
+    /* Плашка, которая появляется вместо шапки при скролле */
+    .mini-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      width: 100%;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 10px 16px;
+      font-size: 14px;
+      letter-spacing: 1px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      opacity: 0;
+      transform: translateY(-100%);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+    }
+
+    .mini-bar.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .mini-bar span {
+      cursor: pointer;
+    }
+
+    .mini-bar .repo-link {
+      font-size: 13px;
+      padding: 5px 14px;
+    }
+
+    /* ===== Плитка фотографий ===== */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gap);
+      padding: var(--gap);
+    }
+
+    .gallery figure {
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      cursor: pointer;
+      background: #1a1a1a;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.05);
+    }
+
+    @media (min-width: 700px) {
+      .gallery {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media (min-width: 1000px) {
+      .gallery {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+
+    /* Индикатор подгрузки внизу */
+    .sentinel {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #999;
+      letter-spacing: 1px;
+    }
+
+    /* ===== Просмотр фото на весь экран ===== */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.94);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .lightbox-close,
+    .lightbox-prev,
+    .lightbox-next {
+      position: absolute;
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .lightbox-close {
+      top: 20px;
+      right: 30px;
+      font-size: 32px;
+    }
+
+    .lightbox-prev,
+    .lightbox-next {
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 40px;
+      padding: 10px 16px;
+    }
+
+    .lightbox-prev {
+      left: 10px;
+    }
+
+    .lightbox-next {
+      right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Шапка с общим фото -->
+  <header class="hero" id="hero">
+    <img src="photos/main.jpg" alt="Общее фото со свадьбы">
+    <div class="hero-text">
+      <h1>Свадьба Константина и Анастасии 30.05.2026</h1>
+      <!-- Вставьте сюда ссылку на репозиторий со всеми фото в полном объёме -->
+      <a class="repo-link" href="https://disk.yandex.ru/d/Dae6GfiAFyVYJw" target="_blank" rel="noopener">Все фото на
+        Я.Диске →</a>
+    </div>
+  </header>
+
+  <!-- Плашка-заменитель, появляется когда шапка уходит из вида -->
+  <div class="mini-bar" id="miniBar">
+    <span id="miniBarText">Свадьба 30.05.2026</span>
+    <a class="repo-link" href="#" target="_blank" rel="noopener">Все фото →</a>
+  </div>
+
+  <!-- Плитка фотографий -->
+  <main class="gallery" id="gallery"></main>
+
+  <!-- Индикатор/триггер подгрузки следующей порции -->
+  <div class="sentinel" id="sentinel">Загрузка фото…</div>
+
+  <!-- Полноэкранный просмотр -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">&times;</button>
+    <button class="lightbox-prev" id="lightboxPrev">&#10094;</button>
+    <img src="" alt="" id="lightboxImg">
+    <button class="lightbox-next" id="lightboxNext">&#10095;</button>
+  </div>
+
+  <script>
+    const TOTAL_PHOTOS = 1269; // поменяйте на реальное количество фото
+    const photos = Array.from({ length: TOTAL_PHOTOS }, (_, i) => `${i + 1}.jpg`);
+
+    const BATCH_SIZE = 24; // сколько фото подгружать за раз
+    let loaded = 0;
+
+    const gallery = document.getElementById('gallery');
+    const sentinel = document.getElementById('sentinel');
+
+    function loadNextBatch() {
+      const next = photos.slice(loaded, loaded + BATCH_SIZE);
+      if (next.length === 0) {
+        sentinel.textContent = 'Это все фотографии';
+        loadObserver.unobserve(sentinel);
+        return;
+      }
+
+      next.forEach((filename, i) => {
+        const index = loaded + i;
+        const figure = document.createElement('figure');
+        figure.dataset.index = index;
+
+        const img = document.createElement('img');
+        img.src = `photos/${filename}`;
+        img.alt = `Фото ${index + 1}`;
+        img.loading = 'lazy';
+
+        figure.appendChild(img);
+        gallery.appendChild(figure);
+      });
+
+      loaded += next.length;
+
+      if (loaded >= photos.length) {
+        sentinel.textContent = 'Это все фотографии';
+        loadObserver.unobserve(sentinel);
+      }
+    }
+
+    // Подгружаем следующую порцию, когда индикатор внизу попадает во вьюпорт
+    const loadObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) loadNextBatch();
+    }, { rootMargin: '600px' });
+
+    loadObserver.observe(sentinel);
+    loadNextBatch(); // первая порция сразу
+
+    /* ===== Шапка: скрытие при скролле ===== */
+    const hero = document.getElementById('hero');
+    const miniBar = document.getElementById('miniBar');
+
+    const heroObserver = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      // Показываем плашку, когда шапка почти полностью скрылась за плашкой/верхом экрана
+      if (entry.intersectionRatio < 0.05) {
+        miniBar.classList.add('visible');
+      } else {
+        miniBar.classList.remove('visible');
+      }
+    }, { threshold: [0, 0.05, 1] });
+
+    heroObserver.observe(hero);
+
+    document.getElementById('miniBarText').addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /* ===== Полноэкранный просмотр с листанием ===== */
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxClose = document.getElementById('lightboxClose');
+    const lightboxPrev = document.getElementById('lightboxPrev');
+    const lightboxNext = document.getElementById('lightboxNext');
+    let currentIndex = -1;
+
+    function openLightbox(index) {
+      if (index < 0 || index >= loaded) return;
+      currentIndex = index;
+      lightboxImg.src = `photos/${photos[index]}`;
+      lightboxImg.alt = `Фото ${index + 1}`;
+      lightbox.classList.add('open');
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      lightboxImg.src = '';
+      currentIndex = -1;
+    }
+
+    gallery.addEventListener('click', (e) => {
+      const figure = e.target.closest('figure');
+      if (!figure) return;
+      openLightbox(Number(figure.dataset.index));
+    });
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxPrev.addEventListener('click', () => openLightbox(currentIndex - 1));
+    lightboxNext.addEventListener('click', () => openLightbox(currentIndex + 1));
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') openLightbox(currentIndex - 1);
+      if (e.key === 'ArrowRight') openLightbox(currentIndex + 1);
+    });
+  </script>
+
+</body>
+
+</html>
